@@ -1,0 +1,256 @@
+id: 7ce9bfa4-2234-4cc2-8b52-8ac8256af63e
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ""
+  type: ""
+  name: ""
+name: 'Health Check - Test Enabled Instances '
+description: Test all enabled instances and email out any failed instances. Idea is
+  that this playbook can be run daily as a job and the report can be received when
+  the engineers start their day.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22f878be-bfc2-427b-8b5b-91007d4a900e
+    type: start
+    task:
+      id: 22f878be-bfc2-427b-8b5b-91007d4a900e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 505e088a-f962-43a6-a118-c823be493fcd
+    type: title
+    task:
+      id: 505e088a-f962-43a6-a118-c823be493fcd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9e382633-486d-464e-b7cc-41dbbfc24564
+    type: regular
+    task:
+      id: 9e382633-486d-464e-b7cc-41dbbfc24564
+      version: -1
+      name: Test Failed Instances And Return Current Status
+      description: Executes a test for all integration instances available and returns
+        detailed information about succeeded and failed integration instances.
+      scriptName: FailedInstances
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      includeDefault:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ffd7fbf5-587c-490e-9570-3368d9163830
+    type: condition
+    task:
+      id: ffd7fbf5-587c-490e-9570-3368d9163830
+      version: -1
+      name: Check if there are any failed instances
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      no errors:
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: InstancesCount.FailedCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: no errors
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: InstancesCount.FailedCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 13293e35-abc8-4fa2-9cfb-9296e2cb2978
+    type: regular
+    task:
+      id: 13293e35-abc8-4fa2-9cfb-9296e2cb2978
+      version: -1
+      name: Email Analysts about failed instances
+      description: Sends an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b40cc425-f465-454b-89a6-3a24355fc4cd
+    type: regular
+    task:
+      id: b40cc425-f465-454b-89a6-3a24355fc4cd
+      version: -1
+      name: Close Investigation as no failed instance present
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      closeNotes:
+        simple: No failed instances to report
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 6e25b003-0682-4f27-8c12-b7cc207c5b2b
+adopted: true
+possibleresponses: []
